@@ -15,7 +15,7 @@ def build_suggestions(str):
             suggestions.append(prefix)
     return ' '.join(suggestions)
 
-def createQueryDocument(query):
+def create_query_document(query):
 	if query:
 		try:
 			return search.Document(doc_id=query.key, fields=[search.TextField(name='query', value=build_suggestions(query.query_value)),
@@ -24,3 +24,6 @@ def createQueryDocument(query):
 			logging.exception('Couldnt create index blah')
 	else:
 		return
+	
+def xml_to_json(xml_string):
+	return

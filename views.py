@@ -94,7 +94,7 @@ class SearchHandler(webapp2.RequestHandler):
         #if the number of results is 0 and we are not searching via ajax, then create new document for the query
         if results.number_found == 0 and ajax == 0:
             try:
-                search.Index(name="queries").put(createQueryDocument(q))
+                search.Index(name="queries").put(create_query_document(q))
                 results = search.Index(name="queries").search(query=q.query_value)
             except:
                 logging.exception('Could not create search document for query: ' + q.query_value)
@@ -111,7 +111,8 @@ class SearchHandler(webapp2.RequestHandler):
             #encode query b/c apis may not accept multiple word queries. So replace spaces between words with a +
             encoded_query = query.replace(' ','+')
             #parse the JSON that we get back from walmart API call so that we can access each of the parts via code
-            walmart_results = json.loads(urlfetch.fetch("http://api.walmartlabs.com/v1/search?apiKey="+walmart_api_key+"&query="+encoded_query+"&categoryId=3944&sort=price&ord=asc").content)
+            walmart_results = json.loads(urlfetch.fetch("http://api.walmartlabs.com/v1/search?apiKey="+walmart_api_key+"&query="+encoded_query+"&categoryId=3944&sort=relevance&ord=asc").content)
+            best_buy_results = 
             #make sure we have items to show
             try:
                 walmart_items = []
