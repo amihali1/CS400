@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]--><head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{%block title %}Item Search Demo{% endblock title %}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+		{% block css %}{% endblock css %}
+        
+    <link rel="stylesheet" href="/media/css/normalize.css">
+        <link rel="stylesheet" href="/media/css/main.css">
+        <link rel="stylesheet" href="/media/js/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css" />
+        <script src="/media/js/vendor/modernizr-2.6.2.min.js"></script>
+
+    </head>
+    <body>
+    
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <!-- Add your site or application content here -->
+        <div id="container">
+		{% block content %}
+       	<img src="/media/img/logoCS400.png" id="logo" />
+        {% if errors %}
+        <div class="errorBox" style="display:block;">
+        	<ul>
+            	{% for e in errors %}
+            	<li>{{ e }}</li>
+               	{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        <form action="/search" method="get" id="searchForm">
+        <p><label for="itemSearch">Search: </label><input type="text" id="q" name="term" />
+        <input type="submit" value="Go" id="searchSubmit"/></p>
+        </form>
+        {% if results %}
+        	<div id="results">
+           
+            <table id="resultsTable" cellspacing="0">
+             <h2>{{ number_results }} results for "{{ q }}"</h2>
+            	<thead>
+                	<th class="quarterWidth">Company</th>
+                    <th class="halfwidth">Item</th>
+                    <th class="quarterWidth">Price</th>
+                
+                <tbody>
+                	{% if items %}
+                    	{% for item in items['walmart'] %}
+                        <tr>
+                        	<td><img src="/media/img/walmart-logo.gif" height="100" /></td>
+                            <td class="halfWidth"><img src="{{ item.thumbnailImage }}" height="100" /> <a href="{{ item.productUrl }}"><span style="font-size:.8em;">{{ item.name }}</span></a></td>
+                            <td>{% if item.salePrice %}${{ '%0.2f'| format(item.salePrice|float) }}{% else %}N/A{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %} 
+               </tbody>
+            </table>
+            </div>
+        {% endif %}
+		{% endblock content %}
+		</div>
+		<!--jQuery and add on scripts-->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/media/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <script type="text/javascript" src="/media/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+        <script src="/media/js/plugins.js"></script>
+        <script src="/media/js/main.js"></script>
+        {% block js %}{% endblock js %}
+        
+		<script type="text/javascript">
+			var walmartApiKey = "nkb83uzran3m7vhp7bvjeejt"; //key to search walmart items
+        	//var items = ["iPhone","Motorola RAZR","Samsung Galaxy","dogfood","nail clippers"]; //sample data for testing
+			$("#q").autocomplete({
+				source: function(req, add) {
+					console.log('hello');
+					//pass request to server  
+					$.getJSON("/search?ajax=1", req, function(data) {  
+						//create array for response objects  
+						var suggestions = [];  
+						//process response  
+						$.each(data, function(i, val){                                
+							suggestions.push(val.q);  
+						}); 
+						//pass array to callback  
+						add(suggestions);
+					});
+				},
+				minLength:2,
+			});
+        </script>
+        
+        
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <script>
+			 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+			  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+			
+			  ga('create', 'UA-41899648-2', 'utk-cs400.appspot.com');
+			  ga('send', 'pageview');
+			   /*var _gaq = _gaq || [];
+			  _gaq.push(['_setAccount', 'UA-41899648-2']);
+			  _gaq.push(['_setDomainName', 'utk-cs400.appspot.com']);
+			  _gaq.push(['_trackPageview']);
+			
+			  (function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			  })();*/
+        </script>
+    </body>
+</html>
