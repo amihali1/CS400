@@ -80,7 +80,6 @@
         	//var items = ["iPhone","Motorola RAZR","Samsung Galaxy","dogfood","nail clippers"]; //sample data for testing
 			$("#q").autocomplete({
 				source: function(req, add) {
-					console.log('hello');
 					//pass request to server  
 					$.getJSON("/search?ajax=1", req, function(data) {  
 						//create array for response objects  
