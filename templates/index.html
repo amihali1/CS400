@@ -55,9 +55,16 @@
                 	{% if items %}
                     	{% for item in items['walmart'] %}
                         <tr>
-                        	<td><img src="/media/img/walmart-logo.gif" height="100" /></td>
-                            <td class="halfWidth"><img src="{{ item.thumbnailImage }}" height="100" /> <a href="{{ item.productUrl }}"><span style="font-size:.8em;">{{ item.name }}</span></a></td>
+                        	<td><img src="/media/img/walmart-logo.gif" height="100"  /></td>
+                            <td class="halfWidth"><img src="{{ item.thumbnailImage }}" height="100" width="100" /> <a href="{{ item.productUrl }}"><span style="font-size:.8em;">{{ item.name }}</span></a></td>
                             <td>{% if item.salePrice %}${{ '%0.2f'| format(item.salePrice|float) }}{% else %}N/A{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                        {% for item in items['best_buy'] %}
+                        <tr>
+                        	<td><img src="/media/img/best_buy_logo.gif" height="100" /></td>
+                            <td class="halfWidth"><img src="{{ item.thumbnailImage }}" height="100" width="100" /> <a href="{{ item.url }}"><span style="font-size:.8em;">{{ item.name }}</span></a></td>
+                            <td>{% if item.salePrice %}${{ '%0.2f'| format(item.salePrice|float) }}{% else %}{{ '%0.2f' | format(item.regularPrice|float) }}{% endif %}</td>
                         </tr>
                         {% endfor %}
                     {% endif %} 

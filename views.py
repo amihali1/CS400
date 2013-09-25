@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import webapp2
 import os
+import re
 import logging
 import jinja2
 import urllib
@@ -110,9 +111,22 @@ class SearchHandler(webapp2.RequestHandler):
             items = {}
             #encode query b/c apis may not accept multiple word queries. So replace spaces between words with a +
             encoded_query = query.replace(' ','+')
-            #parse the JSON that we get back from walmart API call so that we can access each of the parts via code
+            
+            #for best buy, we want to add wildcard * in order to search for items not identical to query
+            #but where query is just included somewhere in name or desc
+            temp = query.split(' ')
+            if len(temp) == 1:
+                best_buy_encoded_query = query + '*'
+            else:
+                temp[-1] = temp[-1] + '*'
+                temp = '*|name='.join(temp)
+                best_buy_encoded_query = temp
+
+            #parse the JSON that we get back from API calls so that we can access each of the parts via code
             walmart_results = json.loads(urlfetch.fetch("http://api.walmartlabs.com/v1/search?apiKey="+walmart_api_key+"&query="+encoded_query+"&categoryId=3944&sort=relevance&ord=asc").content)
-            best_buy_results = 
+            best_buy_results = json.loads(urlfetch.fetch("http://api.remix.bestbuy.com/v1/products(name="+best_buy_encoded_query+")?format=json&show=name,regularPrice,onlineAvailability,thumbnailImage,url&apiKey="+best_buy_api_key).content)
+            #self.response.out.write(best_buy_results)
+            #return
             #make sure we have items to show
             try:
                 walmart_items = []
@@ -122,8 +136,17 @@ class SearchHandler(webapp2.RequestHandler):
                         walmart_items.append(item)
             except:
                 walmart_items = []
+            try:
+                best_buy_items = []
+                for item in best_buy_results['products']:
+                    if item['onlineAvailability']:
+                        best_buy_items.append(item)
+            except:
+                best_buy_items = []
+                
             items['walmart'] = walmart_items
-            total_results += int(walmart_results['totalResults'])
+            items['best_buy'] = best_buy_items
+            total_results += int(walmart_results['totalResults']) + int(best_buy_results['total'])
             template_values = {'results':results,'q':q.query_value,'number_results':total_results,'items':items}
             template = jinja_environment.get_template('/templates/index.html')
             self.response.out.write(template.render(template_values))#walmart_results)#
