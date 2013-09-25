@@ -27,3 +27,7 @@ def create_query_document(query):
 	
 def xml_to_json(xml_string):
 	return
+
+def get_auto_complete_results(query):
+	
+	return
